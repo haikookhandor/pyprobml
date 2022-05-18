@@ -23,7 +23,7 @@ import d2l
 
 ---------------------------------------------------------------------------
 ModuleNotFoundError                       Traceback (most recent call last)
-/tmp/ipykernel_3332/3140820900.py in <module>
+/tmp/ipykernel_3337/3140820900.py in <module>
      11     get_ipython().run_line_magic('pip', 'install torch')
      12     import torch
 ---> 13 from torch import nn
