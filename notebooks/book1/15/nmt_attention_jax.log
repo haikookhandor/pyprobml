@@ -39,7 +39,7 @@ rng = jax.random.PRNGKey(0)
 
 ---------------------------------------------------------------------------
 ModuleNotFoundError                       Traceback (most recent call last)
-/tmp/ipykernel_3806/2435565053.py in <module>
+/tmp/ipykernel_3797/2435565053.py in <module>
 ----> 1 import jax.numpy as jnp
       2 import matplotlib.pyplot as plt
       3 import pandas as pd
