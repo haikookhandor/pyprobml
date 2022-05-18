@@ -21,7 +21,7 @@ key = jax.random.PRNGKey(1)
 
 ---------------------------------------------------------------------------
 ModuleNotFoundError                       Traceback (most recent call last)
-/tmp/ipykernel_3801/3783088977.py in <module>
+/tmp/ipykernel_3825/3783088977.py in <module>
 ----> 1 import jax
       2 import jax.numpy as jnp
       3 
