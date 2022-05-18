@@ -1,0 +1,32 @@
+An error occurred while executing the following cell:
+------------------
+import jax
+import jax.numpy as jnp
+
+try:
+    import flax.linen as nn
+except ModuleNotFoundError:
+    %pip install flax
+    import flax.linen as nn
+from typing import Tuple
+
+!mkdir figures # for saving plots
+import warnings
+
+warnings.filterwarnings("ignore")
+
+
+key = jax.random.PRNGKey(1)
+------------------
+
+---------------------------------------------------------------------------
+ModuleNotFoundError                       Traceback (most recent call last)
+/tmp/ipykernel_3801/3783088977.py in <module>
+----> 1 import jax
+      2 import jax.numpy as jnp
+      3 
+      4 try:
+      5     import flax.linen as nn
+
+ModuleNotFoundError: No module named 'jax'
+ModuleNotFoundError: No module named 'jax'
