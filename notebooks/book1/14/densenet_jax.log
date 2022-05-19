@@ -30,48 +30,23 @@ print(f"loss {train_l:.3f}, train acc {train_acc:.3f}, " f"test acc {test_acc:.3
 ------------------
 
 ---------------------------------------------------------------------------
-ConnectionRefusedError                    Traceback (most recent call last)
+Empty                                     Traceback (most recent call last)
 ~/miniconda3/envs/py37/lib/python3.7/site-packages/torch/utils/data/dataloader.py in _try_get_data(self, timeout)
    1010         try:
 -> 1011             data = self._data_queue.get(timeout=timeout)
    1012             return (True, data)
 
 ~/miniconda3/envs/py37/lib/python3.7/multiprocessing/queues.py in get(self, block, timeout)
-    112         # unserialize the data after having released the lock
---> 113         return _ForkingPickler.loads(res)
-    114 
+    104                     if not self._poll(timeout):
+--> 105                         raise Empty
+    106                 elif not self._poll():
 
-~/miniconda3/envs/py37/lib/python3.7/site-packages/torch/multiprocessing/reductions.py in rebuild_storage_fd(cls, df, size)
-    294 def rebuild_storage_fd(cls, df, size):
---> 295     fd = df.detach()
-    296     try:
-
-~/miniconda3/envs/py37/lib/python3.7/multiprocessing/resource_sharer.py in detach(self)
-     56             '''Get the fd.  This should only be called once.'''
----> 57             with _resource_sharer.get_connection(self._id) as conn:
-     58                 return reduction.recv_handle(conn)
-
-~/miniconda3/envs/py37/lib/python3.7/multiprocessing/resource_sharer.py in get_connection(ident)
-     86         address, key = ident
----> 87         c = Client(address, authkey=process.current_process().authkey)
-     88         c.send((key, os.getpid()))
-
-~/miniconda3/envs/py37/lib/python3.7/multiprocessing/connection.py in Client(address, family, authkey)
-    491     else:
---> 492         c = SocketClient(address)
-    493 
-
-~/miniconda3/envs/py37/lib/python3.7/multiprocessing/connection.py in SocketClient(address)
-    619         s.setblocking(True)
---> 620         s.connect(address)
-    621         return Connection(s.detach())
-
-ConnectionRefusedError: [Errno 111] Connection refused
+Empty: 
 
 The above exception was the direct cause of the following exception:
 
 RuntimeError                              Traceback (most recent call last)
-/tmp/ipykernel_2936/1115125.py in <module>
+/tmp/ipykernel_4032/1115125.py in <module>
       7     # Sum of training loss, sum of training accuracy, no. of examples
       8     metric = Accumulator(3)
 ----> 9     for i, (X, y) in enumerate(train_iter):
@@ -106,5 +81,5 @@ RuntimeError                              Traceback (most recent call last)
    1025             if isinstance(e, queue.Empty):
    1026                 return (False, None)
 
-RuntimeError: DataLoader worker (pid(s) 3145) exited unexpectedly
-RuntimeError: DataLoader worker (pid(s) 3145) exited unexpectedly
+RuntimeError: DataLoader worker (pid(s) 4148) exited unexpectedly
+RuntimeError: DataLoader worker (pid(s) 4148) exited unexpectedly
