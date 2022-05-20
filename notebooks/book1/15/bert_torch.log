@@ -1,1 +1,143 @@
-Kernel died
+An error occurred while executing the following cell:
+------------------
+# Reduce `batch_size` if there is an out of memory error.
+# In the original BERT model, `max_len` = 512
+# batch_size, max_len, num_workers = 512, 128, 4
+batch_size, max_len, num_workers = 256, 128, 4
+data_dir = download_extract("SNLI")
+train_set = SNLIBERTDataset(read_snli(data_dir, True), max_len, vocab)
+test_set = SNLIBERTDataset(read_snli(data_dir, False), max_len, vocab)
+train_iter = torch.utils.data.DataLoader(train_set, batch_size, shuffle=True, num_workers=num_workers)
+test_iter = torch.utils.data.DataLoader(test_set, batch_size, num_workers=num_workers)
+------------------
+
+---------------------------------------------------------------------------
+TimeoutError                              Traceback (most recent call last)
+~/miniconda3/envs/py37/lib/python3.7/site-packages/urllib3/connection.py in _new_conn(self)
+    174             conn = connection.create_connection(
+--> 175                 (self._dns_host, self.port), self.timeout, **extra_kw
+    176             )
+
+~/miniconda3/envs/py37/lib/python3.7/site-packages/urllib3/util/connection.py in create_connection(address, timeout, source_address, socket_options)
+     94     if err is not None:
+---> 95         raise err
+     96 
+
+~/miniconda3/envs/py37/lib/python3.7/site-packages/urllib3/util/connection.py in create_connection(address, timeout, source_address, socket_options)
+     84                 sock.bind(source_address)
+---> 85             sock.connect(sa)
+     86             return sock
+
+TimeoutError: [Errno 110] Connection timed out
+
+During handling of the above exception, another exception occurred:
+
+NewConnectionError                        Traceback (most recent call last)
+~/miniconda3/envs/py37/lib/python3.7/site-packages/urllib3/connectionpool.py in urlopen(self, method, url, body, headers, retries, redirect, assert_same_host, timeout, pool_timeout, release_conn, chunked, body_pos, **response_kw)
+    709                 headers=headers,
+--> 710                 chunked=chunked,
+    711             )
+
+~/miniconda3/envs/py37/lib/python3.7/site-packages/urllib3/connectionpool.py in _make_request(self, conn, method, url, timeout, chunked, **httplib_request_kw)
+    385         try:
+--> 386             self._validate_conn(conn)
+    387         except (SocketTimeout, BaseSSLError) as e:
+
+~/miniconda3/envs/py37/lib/python3.7/site-packages/urllib3/connectionpool.py in _validate_conn(self, conn)
+   1039         if not getattr(conn, "sock", None):  # AppEngine might not have  `.sock`
+-> 1040             conn.connect()
+   1041 
+
+~/miniconda3/envs/py37/lib/python3.7/site-packages/urllib3/connection.py in connect(self)
+    357         # Add certificate verification
+--> 358         self.sock = conn = self._new_conn()
+    359         hostname = self.host
+
+~/miniconda3/envs/py37/lib/python3.7/site-packages/urllib3/connection.py in _new_conn(self)
+    186             raise NewConnectionError(
+--> 187                 self, "Failed to establish a new connection: %s" % e
+    188             )
+
+NewConnectionError: <urllib3.connection.HTTPSConnection object at 0x7f3b5acfdb10>: Failed to establish a new connection: [Errno 110] Connection timed out
+
+During handling of the above exception, another exception occurred:
+
+MaxRetryError                             Traceback (most recent call last)
+~/miniconda3/envs/py37/lib/python3.7/site-packages/requests/adapters.py in send(self, request, stream, timeout, verify, cert, proxies)
+    449                     retries=self.max_retries,
+--> 450                     timeout=timeout
+    451                 )
+
+~/miniconda3/envs/py37/lib/python3.7/site-packages/urllib3/connectionpool.py in urlopen(self, method, url, body, headers, retries, redirect, assert_same_host, timeout, pool_timeout, release_conn, chunked, body_pos, **response_kw)
+    785             retries = retries.increment(
+--> 786                 method, url, error=e, _pool=self, _stacktrace=sys.exc_info()[2]
+    787             )
+
+~/miniconda3/envs/py37/lib/python3.7/site-packages/urllib3/util/retry.py in increment(self, method, url, response, error, _pool, _stacktrace)
+    591         if new_retry.is_exhausted():
+--> 592             raise MaxRetryError(_pool, url, error or ResponseError(cause))
+    593 
+
+MaxRetryError: HTTPSConnectionPool(host='nlp.stanford.edu', port=443): Max retries exceeded with url: /projects/snli/snli_1.0.zip (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x7f3b5acfdb10>: Failed to establish a new connection: [Errno 110] Connection timed out'))
+
+During handling of the above exception, another exception occurred:
+
+ConnectionError                           Traceback (most recent call last)
+/tmp/ipykernel_4196/292799740.py in <module>
+      3 # batch_size, max_len, num_workers = 512, 128, 4
+      4 batch_size, max_len, num_workers = 256, 128, 4
+----> 5 data_dir = download_extract("SNLI")
+      6 train_set = SNLIBERTDataset(read_snli(data_dir, True), max_len, vocab)
+      7 test_set = SNLIBERTDataset(read_snli(data_dir, False), max_len, vocab)
+
+/tmp/ipykernel_4196/1880788227.py in download_extract(name, folder)
+     27 def download_extract(name, folder=None):
+     28     """Download and extract a zip/tar file."""
+---> 29     fname = download(name)
+     30     base_dir = os.path.dirname(fname)
+     31     data_dir, ext = os.path.splitext(fname)
+
+/tmp/ipykernel_4196/1880788227.py in download(name, cache_dir)
+     19             return fname  # Hit cache
+     20     print(f"Downloading {fname} from {url}...")
+---> 21     r = requests.get(url, stream=True, verify=True)
+     22     with open(fname, "wb") as f:
+     23         f.write(r.content)
+
+~/miniconda3/envs/py37/lib/python3.7/site-packages/requests/api.py in get(url, params, **kwargs)
+     73     """
+     74 
+---> 75     return request('get', url, params=params, **kwargs)
+     76 
+     77 
+
+~/miniconda3/envs/py37/lib/python3.7/site-packages/requests/api.py in request(method, url, **kwargs)
+     59     # cases, and look like a memory leak in others.
+     60     with sessions.Session() as session:
+---> 61         return session.request(method=method, url=url, **kwargs)
+     62 
+     63 
+
+~/miniconda3/envs/py37/lib/python3.7/site-packages/requests/sessions.py in request(self, method, url, params, data, headers, cookies, files, auth, timeout, allow_redirects, proxies, hooks, stream, verify, cert, json)
+    527         }
+    528         send_kwargs.update(settings)
+--> 529         resp = self.send(prep, **send_kwargs)
+    530 
+    531         return resp
+
+~/miniconda3/envs/py37/lib/python3.7/site-packages/requests/sessions.py in send(self, request, **kwargs)
+    643 
+    644         # Send the request
+--> 645         r = adapter.send(request, **kwargs)
+    646 
+    647         # Total elapsed time of the request (approximately)
+
+~/miniconda3/envs/py37/lib/python3.7/site-packages/requests/adapters.py in send(self, request, stream, timeout, verify, cert, proxies)
+    517                 raise SSLError(e, request=request)
+    518 
+--> 519             raise ConnectionError(e, request=request)
+    520 
+    521         except ClosedPoolError as e:
+
+ConnectionError: HTTPSConnectionPool(host='nlp.stanford.edu', port=443): Max retries exceeded with url: /projects/snli/snli_1.0.zip (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x7f3b5acfdb10>: Failed to establish a new connection: [Errno 110] Connection timed out'))
+ConnectionError: HTTPSConnectionPool(host='nlp.stanford.edu', port=443): Max retries exceeded with url: /projects/snli/snli_1.0.zip (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x7f3b5acfdb10>: Failed to establish a new connection: [Errno 110] Connection timed out'))
