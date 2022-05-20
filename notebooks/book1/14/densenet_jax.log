@@ -59,45 +59,26 @@ RuntimeError                              Traceback (most recent call last)
     [... skipping hidden 7 frame]
 
 /tmp/ipykernel_4411/2176403876.py in __call__(self, x, train)
-     16 
-     17         for i, num_convs in enumerate(num_convs_in_dense_blocks):
----> 18             x = DenseBlock(growth_rate, num_convs, norm)(x)
-     19             # This is the number of output channels in the previous dense block
-     20             num_channels += num_convs * growth_rate
+     21             # A transition layer that halves the number of channels is added between the dense blocks.
+     22             if i != len(num_convs_in_dense_blocks) - 1:
+---> 23                 x = TransitionBlock(num_channels // 2, norm)(x)
+     24                 num_channels = num_channels // 2
+     25 
 
     [... skipping hidden 3 frame]
 
-/tmp/ipykernel_4411/502619999.py in __call__(self, x)
-      8 
-      9         for _ in range(self.num_convs):
----> 10             y = ConvBlock(self.filters, self.norm)(x)
-     11             # Concatenate the input and output of each block on the channel dimension.
-     12             x = jnp.concatenate(arrays=[x, y], axis=-1)
-
-    [... skipping hidden 3 frame]
-
-/tmp/ipykernel_4411/3760988665.py in __call__(self, x)
-      5     @nn.compact
-      6     def __call__(self, x):
-----> 7         x = self.norm()(x)
+/tmp/ipykernel_4411/585409295.py in __call__(self, x)
       8         x = nn.relu(x)
-      9         x = nn.Conv(self.filters, (3, 3), padding=[(1, 1), (1, 1)], dtype=jnp.float32)(x)
+      9         x = nn.Conv(self.filters, (1, 1), padding=[(0, 0), (0, 0)], dtype=jnp.float32)(x)
+---> 10         x = nn.avg_pool(x, (2, 2), (2, 2), padding=[(0, 0), (0, 0)])
+     11         return x
 
-    [... skipping hidden 3 frame]
-
-~/miniconda3/envs/py37/lib/python3.7/site-packages/flax/linen/normalization.py in __call__(self, x, use_running_average)
-    261         self.dtype, self.param_dtype, self.epsilon,
-    262         self.use_bias, self.use_scale,
---> 263         self.bias_init, self.scale_init)
-    264 
-    265 
-
-~/miniconda3/envs/py37/lib/python3.7/site-packages/flax/linen/normalization.py in _normalize(mdl, x, mean, var, reduction_axes, feature_axes, dtype, param_dtype, epsilon, use_bias, use_scale, bias_init, scale_init)
-    128     feature_shape[ax] = x.shape[ax]
-    129     reduced_feature_shape.append(x.shape[ax])
---> 130   y = x - mean
-    131   mul = lax.rsqrt(var + epsilon)
-    132   if use_scale:
+~/miniconda3/envs/py37/lib/python3.7/site-packages/flax/linen/pooling.py in avg_pool(inputs, window_shape, strides, padding)
+     85   """
+     86   y = pool(inputs, 0., lax.add, window_shape, strides, padding)
+---> 87   y = y / np.prod(window_shape)
+     88   return y
+     89 
 
     [... skipping hidden 1 frame]
 
@@ -108,14 +89,7 @@ RuntimeError                              Traceback (most recent call last)
    4558   return deferring_binary_op
    4559 
 
-    [... skipping hidden 9 frame]
-
-~/miniconda3/envs/py37/lib/python3.7/functools.py in _gt_from_lt(self, other, NotImplemented)
-     91 def _gt_from_lt(self, other, NotImplemented=NotImplemented):
-     92     'Return a > b.  Computed by @total_ordering from (not a < b) and (a != b).'
----> 93     op_result = self.__lt__(other)
-     94     if op_result is NotImplemented:
-     95         return op_result
+    [... skipping hidden 4 frame]
 
 ~/miniconda3/envs/py37/lib/python3.7/site-packages/torch/utils/data/_utils/signal_handling.py in handler(signum, frame)
      64         # This following call uses `waitid` with WNOHANG from C side. Therefore,
@@ -124,5 +98,5 @@ RuntimeError                              Traceback (most recent call last)
      67         if previous_handler is not None:
      68             assert callable(previous_handler)
 
-RuntimeError: DataLoader worker (pid 4584) is killed by signal: Bus error. It is possible that dataloader's workers are out of shared memory. Please try to raise your shared memory limit.
-RuntimeError: DataLoader worker (pid 4584) is killed by signal: Bus error. It is possible that dataloader's workers are out of shared memory. Please try to raise your shared memory limit.
+RuntimeError: DataLoader worker (pid 4692) is killed by signal: Bus error. It is possible that dataloader's workers are out of shared memory. Please try to raise your shared memory limit.
+RuntimeError: DataLoader worker (pid 4692) is killed by signal: Bus error. It is possible that dataloader's workers are out of shared memory. Please try to raise your shared memory limit.
