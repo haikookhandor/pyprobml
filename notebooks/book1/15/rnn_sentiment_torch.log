@@ -1,9 +1,164 @@
-A cell timed out while it was being executed, after 600 seconds.
-The message was: Cell execution timed out.
-Here is a preview of the cell contents:
--------------------
-lr, num_epochs = 0.01, 3
-trainer = torch.optim.Adam(net.parameters(), lr=lr)
-loss = nn.CrossEntropyLoss(reduction="none")
-train(net, train_iter, test_iter, loss, trainer, num_epochs, devices)
--------------------
+An error occurred while executing the following cell:
+------------------
+DATA_HUB = dict()
+DATA_HUB["aclImdb"] = (
+    "http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz",
+    "01ada507287d82875905620988597833ad4e0903",
+)
+
+data_dir = download_extract("aclImdb", "aclImdb")
+------------------
+
+---------------------------------------------------------------------------
+TimeoutError                              Traceback (most recent call last)
+~/miniconda3/envs/py37/lib/python3.7/site-packages/urllib3/connection.py in _new_conn(self)
+    174             conn = connection.create_connection(
+--> 175                 (self._dns_host, self.port), self.timeout, **extra_kw
+    176             )
+
+~/miniconda3/envs/py37/lib/python3.7/site-packages/urllib3/util/connection.py in create_connection(address, timeout, source_address, socket_options)
+     94     if err is not None:
+---> 95         raise err
+     96 
+
+~/miniconda3/envs/py37/lib/python3.7/site-packages/urllib3/util/connection.py in create_connection(address, timeout, source_address, socket_options)
+     84                 sock.bind(source_address)
+---> 85             sock.connect(sa)
+     86             return sock
+
+TimeoutError: [Errno 110] Connection timed out
+
+During handling of the above exception, another exception occurred:
+
+NewConnectionError                        Traceback (most recent call last)
+~/miniconda3/envs/py37/lib/python3.7/site-packages/urllib3/connectionpool.py in urlopen(self, method, url, body, headers, retries, redirect, assert_same_host, timeout, pool_timeout, release_conn, chunked, body_pos, **response_kw)
+    709                 headers=headers,
+--> 710                 chunked=chunked,
+    711             )
+
+~/miniconda3/envs/py37/lib/python3.7/site-packages/urllib3/connectionpool.py in _make_request(self, conn, method, url, timeout, chunked, **httplib_request_kw)
+    397             else:
+--> 398                 conn.request(method, url, **httplib_request_kw)
+    399 
+
+~/miniconda3/envs/py37/lib/python3.7/site-packages/urllib3/connection.py in request(self, method, url, body, headers)
+    238             headers["User-Agent"] = _get_default_user_agent()
+--> 239         super(HTTPConnection, self).request(method, url, body=body, headers=headers)
+    240 
+
+~/miniconda3/envs/py37/lib/python3.7/http/client.py in request(self, method, url, body, headers, encode_chunked)
+   1280         """Send a complete request to the server."""
+-> 1281         self._send_request(method, url, body, headers, encode_chunked)
+   1282 
+
+~/miniconda3/envs/py37/lib/python3.7/http/client.py in _send_request(self, method, url, body, headers, encode_chunked)
+   1326             body = _encode(body, 'body')
+-> 1327         self.endheaders(body, encode_chunked=encode_chunked)
+   1328 
+
+~/miniconda3/envs/py37/lib/python3.7/http/client.py in endheaders(self, message_body, encode_chunked)
+   1275             raise CannotSendHeader()
+-> 1276         self._send_output(message_body, encode_chunked=encode_chunked)
+   1277 
+
+~/miniconda3/envs/py37/lib/python3.7/http/client.py in _send_output(self, message_body, encode_chunked)
+   1035         del self._buffer[:]
+-> 1036         self.send(msg)
+   1037 
+
+~/miniconda3/envs/py37/lib/python3.7/http/client.py in send(self, data)
+    975             if self.auto_open:
+--> 976                 self.connect()
+    977             else:
+
+~/miniconda3/envs/py37/lib/python3.7/site-packages/urllib3/connection.py in connect(self)
+    204     def connect(self):
+--> 205         conn = self._new_conn()
+    206         self._prepare_conn(conn)
+
+~/miniconda3/envs/py37/lib/python3.7/site-packages/urllib3/connection.py in _new_conn(self)
+    186             raise NewConnectionError(
+--> 187                 self, "Failed to establish a new connection: %s" % e
+    188             )
+
+NewConnectionError: <urllib3.connection.HTTPConnection object at 0x7fce2bbfd290>: Failed to establish a new connection: [Errno 110] Connection timed out
+
+During handling of the above exception, another exception occurred:
+
+MaxRetryError                             Traceback (most recent call last)
+~/miniconda3/envs/py37/lib/python3.7/site-packages/requests/adapters.py in send(self, request, stream, timeout, verify, cert, proxies)
+    449                     retries=self.max_retries,
+--> 450                     timeout=timeout
+    451                 )
+
+~/miniconda3/envs/py37/lib/python3.7/site-packages/urllib3/connectionpool.py in urlopen(self, method, url, body, headers, retries, redirect, assert_same_host, timeout, pool_timeout, release_conn, chunked, body_pos, **response_kw)
+    785             retries = retries.increment(
+--> 786                 method, url, error=e, _pool=self, _stacktrace=sys.exc_info()[2]
+    787             )
+
+~/miniconda3/envs/py37/lib/python3.7/site-packages/urllib3/util/retry.py in increment(self, method, url, response, error, _pool, _stacktrace)
+    591         if new_retry.is_exhausted():
+--> 592             raise MaxRetryError(_pool, url, error or ResponseError(cause))
+    593 
+
+MaxRetryError: HTTPConnectionPool(host='ai.stanford.edu', port=80): Max retries exceeded with url: /~amaas/data/sentiment/aclImdb_v1.tar.gz (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7fce2bbfd290>: Failed to establish a new connection: [Errno 110] Connection timed out'))
+
+During handling of the above exception, another exception occurred:
+
+ConnectionError                           Traceback (most recent call last)
+/tmp/ipykernel_3112/3379250511.py in <module>
+      5 )
+      6 
+----> 7 data_dir = download_extract("aclImdb", "aclImdb")
+
+/tmp/ipykernel_3112/1880788227.py in download_extract(name, folder)
+     27 def download_extract(name, folder=None):
+     28     """Download and extract a zip/tar file."""
+---> 29     fname = download(name)
+     30     base_dir = os.path.dirname(fname)
+     31     data_dir, ext = os.path.splitext(fname)
+
+/tmp/ipykernel_3112/1880788227.py in download(name, cache_dir)
+     19             return fname  # Hit cache
+     20     print(f"Downloading {fname} from {url}...")
+---> 21     r = requests.get(url, stream=True, verify=True)
+     22     with open(fname, "wb") as f:
+     23         f.write(r.content)
+
+~/miniconda3/envs/py37/lib/python3.7/site-packages/requests/api.py in get(url, params, **kwargs)
+     73     """
+     74 
+---> 75     return request('get', url, params=params, **kwargs)
+     76 
+     77 
+
+~/miniconda3/envs/py37/lib/python3.7/site-packages/requests/api.py in request(method, url, **kwargs)
+     59     # cases, and look like a memory leak in others.
+     60     with sessions.Session() as session:
+---> 61         return session.request(method=method, url=url, **kwargs)
+     62 
+     63 
+
+~/miniconda3/envs/py37/lib/python3.7/site-packages/requests/sessions.py in request(self, method, url, params, data, headers, cookies, files, auth, timeout, allow_redirects, proxies, hooks, stream, verify, cert, json)
+    527         }
+    528         send_kwargs.update(settings)
+--> 529         resp = self.send(prep, **send_kwargs)
+    530 
+    531         return resp
+
+~/miniconda3/envs/py37/lib/python3.7/site-packages/requests/sessions.py in send(self, request, **kwargs)
+    643 
+    644         # Send the request
+--> 645         r = adapter.send(request, **kwargs)
+    646 
+    647         # Total elapsed time of the request (approximately)
+
+~/miniconda3/envs/py37/lib/python3.7/site-packages/requests/adapters.py in send(self, request, stream, timeout, verify, cert, proxies)
+    517                 raise SSLError(e, request=request)
+    518 
+--> 519             raise ConnectionError(e, request=request)
+    520 
+    521         except ClosedPoolError as e:
+
+ConnectionError: HTTPConnectionPool(host='ai.stanford.edu', port=80): Max retries exceeded with url: /~amaas/data/sentiment/aclImdb_v1.tar.gz (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7fce2bbfd290>: Failed to establish a new connection: [Errno 110] Connection timed out'))
+ConnectionError: HTTPConnectionPool(host='ai.stanford.edu', port=80): Max retries exceeded with url: /~amaas/data/sentiment/aclImdb_v1.tar.gz (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7fce2bbfd290>: Failed to establish a new connection: [Errno 110] Connection timed out'))
