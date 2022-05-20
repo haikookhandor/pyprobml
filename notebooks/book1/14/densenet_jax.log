@@ -30,56 +30,100 @@ print(f"loss {train_l:.3f}, train acc {train_acc:.3f}, " f"test acc {test_acc:.3
 ------------------
 
 ---------------------------------------------------------------------------
-Empty                                     Traceback (most recent call last)
-~/miniconda3/envs/py37/lib/python3.7/site-packages/torch/utils/data/dataloader.py in _try_get_data(self, timeout)
-   1010         try:
--> 1011             data = self._data_queue.get(timeout=timeout)
-   1012             return (True, data)
-
-~/miniconda3/envs/py37/lib/python3.7/multiprocessing/queues.py in get(self, block, timeout)
-    104                     if not self._poll(timeout):
---> 105                         raise Empty
-    106                 elif not self._poll():
-
-Empty: 
-
-The above exception was the direct cause of the following exception:
-
 RuntimeError                              Traceback (most recent call last)
-/tmp/ipykernel_4032/1115125.py in <module>
-      7     # Sum of training loss, sum of training accuracy, no. of examples
-      8     metric = Accumulator(3)
-----> 9     for i, (X, y) in enumerate(train_iter):
-     10         timer.start()
-     11         batch = {}
+/tmp/ipykernel_4598/1115125.py in <module>
+     12         batch["image"] = jnp.reshape(jnp.float32(X), (-1, 96, 96, 1))
+     13         batch["label"] = jnp.float32(y)
+---> 14         state, metrics = train_step(state, batch)
+     15         metric.add(metrics["loss"] * X.shape[0], metrics["numcorrect"], X.shape[0])
+     16         timer.stop()
 
-~/miniconda3/envs/py37/lib/python3.7/site-packages/torch/utils/data/dataloader.py in __next__(self)
-    528             if self._sampler_iter is None:
-    529                 self._reset()
---> 530             data = self._next_data()
-    531             self._num_yielded += 1
-    532             if self._dataset_kind == _DatasetKind.Iterable and \
+    [... skipping hidden 14 frame]
 
-~/miniconda3/envs/py37/lib/python3.7/site-packages/torch/utils/data/dataloader.py in _next_data(self)
-   1205 
-   1206             assert not self._shutdown and self._tasks_outstanding > 0
--> 1207             idx, data = self._get_data()
-   1208             self._tasks_outstanding -= 1
-   1209             if self._dataset_kind == _DatasetKind.Iterable:
+/tmp/ipykernel_4598/1580938479.py in train_step(state, batch)
+     13 
+     14     grad_fn = jax.value_and_grad(loss_fn, has_aux=True)
+---> 15     aux, grads = grad_fn(state.params)
+     16     # grads = lax.pmean(grads, axis_name='batch')
+     17 
 
-~/miniconda3/envs/py37/lib/python3.7/site-packages/torch/utils/data/dataloader.py in _get_data(self)
-   1171         else:
-   1172             while True:
--> 1173                 success, data = self._try_get_data()
-   1174                 if success:
-   1175                     return data
+    [... skipping hidden 8 frame]
 
-~/miniconda3/envs/py37/lib/python3.7/site-packages/torch/utils/data/dataloader.py in _try_get_data(self, timeout)
-   1022             if len(failed_workers) > 0:
-   1023                 pids_str = ', '.join(str(w.pid) for w in failed_workers)
--> 1024                 raise RuntimeError('DataLoader worker (pid(s) {}) exited unexpectedly'.format(pids_str)) from e
-   1025             if isinstance(e, queue.Empty):
-   1026                 return (False, None)
+/tmp/ipykernel_4598/1580938479.py in loss_fn(params)
+      5     def loss_fn(params):
+      6         logits, new_model_state = state.apply_fn(
+----> 7             {"params": params, "batch_stats": state.batch_stats}, batch["image"], mutable=["batch_stats"]
+      8         )
+      9         one_hot = jax.nn.one_hot(batch["label"], num_classes=10)
 
-RuntimeError: DataLoader worker (pid(s) 4148) exited unexpectedly
-RuntimeError: DataLoader worker (pid(s) 4148) exited unexpectedly
+    [... skipping hidden 7 frame]
+
+/tmp/ipykernel_4598/2176403876.py in __call__(self, x, train)
+     16 
+     17         for i, num_convs in enumerate(num_convs_in_dense_blocks):
+---> 18             x = DenseBlock(growth_rate, num_convs, norm)(x)
+     19             # This is the number of output channels in the previous dense block
+     20             num_channels += num_convs * growth_rate
+
+    [... skipping hidden 3 frame]
+
+/tmp/ipykernel_4598/502619999.py in __call__(self, x)
+      8 
+      9         for _ in range(self.num_convs):
+---> 10             y = ConvBlock(self.filters, self.norm)(x)
+     11             # Concatenate the input and output of each block on the channel dimension.
+     12             x = jnp.concatenate(arrays=[x, y], axis=-1)
+
+    [... skipping hidden 3 frame]
+
+/tmp/ipykernel_4598/3760988665.py in __call__(self, x)
+      7         x = self.norm()(x)
+      8         x = nn.relu(x)
+----> 9         x = nn.Conv(self.filters, (3, 3), padding=[(1, 1), (1, 1)], dtype=jnp.float32)(x)
+     10         return x
+
+    [... skipping hidden 3 frame]
+
+~/miniconda3/envs/py37/lib/python3.7/site-packages/flax/linen/linear.py in __call__(self, inputs)
+    383 
+    384     kernel = self.param('kernel', self.kernel_init, kernel_shape,
+--> 385                         self.param_dtype)
+    386     kernel = jnp.asarray(kernel, self.dtype)
+    387 
+
+    [... skipping hidden 10 frame]
+
+~/miniconda3/envs/py37/lib/python3.7/site-packages/jax/_src/nn/initializers.py in init(key, shape, dtype)
+    229         # constant is stddev of standard normal truncated to (-2, 2)
+    230         stddev = jnp.sqrt(variance) / jnp.array(.87962566103423978, dtype)
+--> 231         return random.truncated_normal(key, -2, 2, shape, dtype) * stddev
+    232       else:
+    233         # constant is stddev of complex standard normal truncated to 2
+
+~/miniconda3/envs/py37/lib/python3.7/site-packages/jax/_src/random.py in truncated_normal(key, lower, upper, shape, dtype)
+    655   if shape is not None:
+    656     shape = core.as_named_shape(shape)
+--> 657   return _truncated_normal(key, lower, upper, shape, dtype)  # type: ignore
+    658 
+    659 @partial(jit, static_argnums=(3, 4), inline=True)
+
+    [... skipping hidden 7 frame]
+
+~/miniconda3/envs/py37/lib/python3.7/site-packages/jax/_src/random.py in _truncated_normal(key, lower, upper, shape, dtype)
+    677   return jnp.clip(
+    678       out,
+--> 679       lax.nextafter(lax.stop_gradient(lower), np.array(np.inf, dtype=dtype)),
+    680       lax.nextafter(lax.stop_gradient(upper), np.array(-np.inf, dtype=dtype)))
+    681 
+
+    [... skipping hidden 10 frame]
+
+~/miniconda3/envs/py37/lib/python3.7/site-packages/torch/utils/data/_utils/signal_handling.py in handler(signum, frame)
+     64         # This following call uses `waitid` with WNOHANG from C side. Therefore,
+     65         # Python can still get and update the process status successfully.
+---> 66         _error_if_any_worker_fails()
+     67         if previous_handler is not None:
+     68             assert callable(previous_handler)
+
+RuntimeError: DataLoader worker (pid 4755) is killed by signal: Bus error. It is possible that dataloader's workers are out of shared memory. Please try to raise your shared memory limit.
+RuntimeError: DataLoader worker (pid 4755) is killed by signal: Bus error. It is possible that dataloader's workers are out of shared memory. Please try to raise your shared memory limit.
